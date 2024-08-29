@@ -1,0 +1,80 @@
+---
+title: "survey_data_analysis"
+author: "Karani"
+format: html
+editor: visual
+---
+
+## Financial well-being survey data analysis
+
+This analysis focuses on data from the National Financial Well-Being Survey to learn more about how a wide range of factors relate to consumers’ financial well-being in 2017 by the Consumer Financial Protection Bureau (cfpb).
+
+```{r}
+#| echo: false
+# load packages to use
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+```
+
+Import the data via url
+
+```{r}
+# import the data
+
+fwb_data <- read.csv("https://www.consumerfinance.gov/documents/5614/NFWBS_PUF_2016_data.csv")
+
+View(fwb_data)
+
+```
+
+Our analysis will focus on responses on individuals in the lower income households bracket i.e. households that earn less than \$50,000. To achieve this, we are guided by the data dictionary available in the public use file cookbook [Public Use File Codebook](https://www.consumerfinance.gov/documents/5586/cfpb_nfwbs-puf-codebook.pdf "National Financial WellBeing Survey Public Use File Codebook")
+
+```{r}
+# subset respondents who earn less than $50,000 income
+
+low_inc <- fwb_data |> 
+  filter(PPINCIMP <= 4)
+
+
+# let us validate what our subset achived by observing the household income variable
+table(low_inc$PPINCIMP)
+
+
+
+# To narrow down our analysis we will focus on three variable respondents gender, respondents household size and the respondents income
+
+low_income_ndwn <- low_inc |> 
+  select(PPGENDER, PPHHSIZE, PPINCIMP)
+
+```
+
+#### creating binary variable
+
+we will achieve this by focusing on the *Household Size* variable. First, we use the data dictionary available in the public use file cookbook [Public Use File Codebook](https://www.consumerfinance.gov/documents/5586/cfpb_nfwbs-puf-codebook.pdf "National Financial WellBeing Survey Public Use File Codebook") to look into the interested variable name in this case *Household Size*.
+
+```{r}
+
+low_income_ndwn$smaller_house <- ifelse(low_income_ndwn$PPHHSIZE <= 2, 1, 0)
+
+View(low_income_ndwn)
+
+
+```
+
+#### Renaming the levels of a categorical variable
+
+Our focus will be on the PPGENDER variable which contains observations of gender of respondents in the survey. After referencing the data dictionary I observed that value 1 represents male while value 2 represents female gender. With this in mind we can use the recode() function from dplyr to achieve our objective
+
+```{r}
+# recode 
+low_income_ndwn$PPGENDER <- recode(low_income_ndwn$PPGENDER, "1" = "Male", "2" = "Female")
+
+#print(low_income_ndwn)
+
+table(low_income_ndwn$PPGENDER)
+```
+
+#### How can you create a new categorical variable
+In our survey data let us try creating a variable which is comprised of the 
