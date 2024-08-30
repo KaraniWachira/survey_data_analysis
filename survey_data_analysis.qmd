@@ -77,4 +77,23 @@ table(low_income_ndwn$PPGENDER)
 ```
 
 #### How can you create a new categorical variable
-In our survey data let us try creating a variable which is comprised of the 
+In our survey data let us create a variable based on the gender variable and smaller house variable
+
+```{r}
+low_income_ndwn$gen_small_house <- if_else(low_income_ndwn$PPGENDER == "Female" & low_income_ndwn$smaller_house == 1, "Female living in a small house",
+                                         if_else(low_income_ndwn$PPGENDER == "Female" & low_income_ndwn$smaller_house == 0, "Female living in a large house",
+                                                 if_else(low_income_ndwn$PPGENDER == "Male" & low_income_ndwn$smaller_house == 1, "Male living in a small house",
+                                                         "Male living in a large house")))
+
+
+
+```
+
+
+
+
+
+
+
+
+
