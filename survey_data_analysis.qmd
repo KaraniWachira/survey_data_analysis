@@ -90,9 +90,21 @@ low_income_ndwn$gen_small_house <- if_else(low_income_ndwn$PPGENDER == "Female" 
 #### what if we want to create a statistical summary table to estimate their financial wellbeing score abbreviated by FWBscore in the refence document where a higher score denotes more satisfaction with the finances and a lower score denotes the vice versa.
 
 ```{r}
+# recode the levels of the income variable
+
+low_income_ndwn$PPINCIMP <- recode(low_income_ndwn$PPINCIMP,
+                                   "1" = "less than $20,000",
+                                   "2" = "$20,000 to $29,000",
+                                   "3" = "$30,000 to $39,000",
+                                   "4" = "$40,000 to $49,000"
+                                   )
+```
+
+
+```{r}
 
 summ_stat_tbl <- low_income_ndwn |> 
-  group_by(gen_small_house) |> 
+  group_by(gen_small_house, PPINCIMP) |> 
   summarise(
     average_FWBscore = round(mean(FWBscore), digit = 2),
     average_FWBscore_weighted = round(weighted.mean(FWBscore, finalwt), digits = 2),
@@ -104,6 +116,40 @@ summ_stat_tbl
 
 
 ```
+
+
+#### visualize the results from our summary table
+
+```{r}
+
+ggplot(summ_stat_tbl, aes(x = gen_small_house, y = average_FWBscore_weighted)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(
+    x = " ",
+    y = "average_FWBscore"
+  ) +
+  theme_minimal()
+
+
+```
+
+
+lets improve our visualization further buy having a grouped bar plot by working on the annual financial income 
+
+```{r}
+ggplot(summ_stat_tbl, aes(x = gen_small_house, y = average_FWBscore_weighted, fill = PPINCIMP)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  coord_flip() +
+  labs(
+    x = " ",
+    y = "average financial wellbing score", fill = "Household income"
+  ) +
+  theme_light()
+
+```
+
+
 
 
 
