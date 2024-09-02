@@ -1,6 +1,6 @@
 ---
 title: "survey_data_analysis"
-author: "Karani"
+author: "Keith Karani"
 format: html
 editor: visual
 ---
@@ -10,7 +10,7 @@ editor: visual
 This analysis focuses on data from the National Financial Well-Being Survey to learn more about how a wide range of factors relate to consumers’ financial well-being in 2017 by the Consumer Financial Protection Bureau (cfpb).
 
 ```{r}
-#| echo: false
+#| echo: fenced
 # load packages to use
 library(dplyr)
 library(tidyr)
@@ -18,7 +18,7 @@ library(ggplot2)
 
 ```
 
-Import the data via url
+#### Import data via url
 
 ```{r}
 # import the data
@@ -50,7 +50,7 @@ low_income_ndwn <- low_inc |>
 
 ```
 
-#### creating binary variable
+#### creating a binary variable
 
 we will achieve this by focusing on the *Household Size* variable. First, we use the data dictionary available in the public use file cookbook [Public Use File Codebook](https://www.consumerfinance.gov/documents/5586/cfpb_nfwbs-puf-codebook.pdf "National Financial WellBeing Survey Public Use File Codebook") to look into the interested variable name in this case *Household Size*.
 
@@ -77,6 +77,7 @@ table(low_income_ndwn$PPGENDER)
 ```
 
 #### How can you create a new categorical variable
+
 In our survey data let us create a variable based on the gender variable and smaller house variable
 
 ```{r}
@@ -87,11 +88,13 @@ low_income_ndwn$gen_small_house <- if_else(low_income_ndwn$PPGENDER == "Female" 
 
 ```
 
-#### what if we want to create a statistical summary table to estimate their financial wellbeing score abbreviated by FWBscore in the refence document where a higher score denotes more satisfaction with the finances and a lower score denotes the vice versa.
+Let us create a statistical summary table to estimate their financial wellbeing score abbreviated by FWBscore in the reference document whereby:
+
+A higher score denotes more satisfaction with the finances and a lower score denotes the vice versa.
 
 ```{r}
+# these values are refernced from the documentation
 # recode the levels of the income variable
-
 low_income_ndwn$PPINCIMP <- recode(low_income_ndwn$PPINCIMP,
                                    "1" = "less than $20,000",
                                    "2" = "$20,000 to $29,000",
@@ -100,9 +103,7 @@ low_income_ndwn$PPINCIMP <- recode(low_income_ndwn$PPINCIMP,
                                    )
 ```
 
-
 ```{r}
-
 summ_stat_tbl <- low_income_ndwn |> 
   group_by(gen_small_house, PPINCIMP) |> 
   summarise(
@@ -116,7 +117,6 @@ summ_stat_tbl
 
 
 ```
-
 
 #### visualize the results from our summary table
 
@@ -134,27 +134,17 @@ ggplot(summ_stat_tbl, aes(x = gen_small_house, y = average_FWBscore_weighted)) +
 
 ```
 
-
-lets improve our visualization further buy having a grouped bar plot by working on the annual financial income 
+We can improve our visualization further buy having a grouped bar plot by working on the annual financial income
 
 ```{r}
 ggplot(summ_stat_tbl, aes(x = gen_small_house, y = average_FWBscore_weighted, fill = PPINCIMP)) +
   geom_bar(stat = "identity", position = "dodge") +
   coord_flip() +
   labs(
+    title = "Avg financial well being score ",
     x = " ",
-    y = "average financial wellbing score", fill = "Household income"
+    y = "average financial wellbeing score", fill = "Household income"
   ) +
   theme_light()
 
 ```
-
-
-
-
-
-
-
-
-
-
