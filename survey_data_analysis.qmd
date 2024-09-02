@@ -46,7 +46,7 @@ table(low_inc$PPINCIMP)
 # To narrow down our analysis we will focus on three variable respondents gender, respondents household size and the respondents income
 
 low_income_ndwn <- low_inc |> 
-  select(PPGENDER, PPHHSIZE, PPINCIMP)
+  select(PPGENDER, PPHHSIZE, PPINCIMP, FWBscore, finalwt)
 
 ```
 
@@ -85,10 +85,25 @@ low_income_ndwn$gen_small_house <- if_else(low_income_ndwn$PPGENDER == "Female" 
                                                  if_else(low_income_ndwn$PPGENDER == "Male" & low_income_ndwn$smaller_house == 1, "Male living in a small house",
                                                          "Male living in a large house")))
 
+```
+
+#### what if we want to create a statistical summary table to estimate their financial wellbeing score abbreviated by FWBscore in the refence document where a higher score denotes more satisfaction with the finances and a lower score denotes the vice versa.
+
+```{r}
+
+summ_stat_tbl <- low_income_ndwn |> 
+  group_by(gen_small_house) |> 
+  summarise(
+    average_FWBscore = round(mean(FWBscore), digit = 2),
+    average_FWBscore_weighted = round(weighted.mean(FWBscore, finalwt), digits = 2),
+    median_FWBscore = round(median(FWBscore), digits = 2),
+    SD_FWBscore = round(sd(FWBscore), digits = 2)
+  )
+
+summ_stat_tbl
 
 
 ```
-
 
 
 
